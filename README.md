@@ -1,6 +1,9 @@
 # DataflowPipelineBuilder
 Build TPL Dataflow pipelines using a fluent API and helpful extensions
 
+# NuGet
+https://www.nuget.org/packages/DataflowPipelineBuilder
+
 ```csharp
 var builder = 
     new Builder();
