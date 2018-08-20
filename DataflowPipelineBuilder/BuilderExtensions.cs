@@ -25,6 +25,14 @@ namespace DataflowPipelineBuilder
             Func<T, TResult> selector
         ) => builder.Then(new TransformBlock<T, TResult>(selector));
 
+        // This will buffer all the data and call complete
+        // what happens if at this stage the other blocks
+        // are not linked yet?
+        // Change the test BuilderTest.Fork() to use this
+        // and you will get only one output, fix the issue.
+        // We could potentially keep the information in the
+        // builder and once people call End() then we complete
+        // the initial source.
         public static IBuilder<T, T> FromEnumerable<T>(this Builder builder, IEnumerable<T> source)
         {
             var buffer = new BufferBlock<T>();
@@ -34,5 +42,14 @@ namespace DataflowPipelineBuilder
 
             return builder.Create(buffer);
         }
+
+        public static IBuilder<TOrigin, Tuple<TLOutput, TROutput>> 
+        Fork<TOrigin, TO, T, TLOutput, TROutput>
+        (
+            this IBuilder<TOrigin, T> source,
+            Func<IBuilder<TOrigin, T>, IBuilder<TO, TLOutput>> leftBranch,
+            Func<IBuilder<TOrigin, T>, IBuilder<TO, TROutput>> rightBranch
+        ) => source.Fork()
+                   .Then(leftBranch, rightBranch);
     }
 }

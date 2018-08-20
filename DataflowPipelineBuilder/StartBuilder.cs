@@ -13,8 +13,11 @@ namespace DataflowPipelineBuilder
         {
             _start.LinkTo(block, new DataflowLinkOptions { PropagateCompletion = true });
 
-            return new MiddleBuilder<TOrigin, TSource, TTarget>(_start, block);
+            return new MiddleBuilder<TOrigin, TTarget>(_start, block);
         }
+
+        public IForkBuilder<TOrigin, TSource> Fork() => 
+            new ForkBuilder<TOrigin, TSource>(_start, _start);
 
         public IPropagatorBlock<TOrigin, TSource> End() => _start;
     }
