@@ -2,7 +2,7 @@
 Build TPL Dataflow pipelines using a fluent API and helpful extensions
 
 # Rationale
-TPL Dataflow is a powerful library, but the code is far less readable without the help of a diagram, this library should help visualize the pipeline in code, too. See the last example for the pipeline in code that reseable a diagram.
+TPL Dataflow is a powerful library, but the code is far less readable without the help of a diagram, this library should help visualize the pipeline in code, too. See the last example (Simple extensions) for the pipeline in code that reseables a diagram.
 
 # NuGet
 https://www.nuget.org/packages/DataflowPipelineBuilder
@@ -82,7 +82,7 @@ Assert.That(actual.Select(t => t.Item2), Is.EquivalentTo(new [] { 1, 2, 3 }));
 ```
 # Simple extensions
 
-Alternativeli, the project `SimpleDataflowPipelineBuilder` contains extension methods applying to the dataflow blocks directly without the help of a builder (this doesn't support added logging and custom options applied to all links, but it's simple and works well in most cases).
+Alternatively, the project `SimpleDataflowPipelineBuilder` contains extension methods applying to the dataflow blocks directly without the help of a builder (this doesn't support added logging and custom options applied to all links, but it's simple and works well in most cases).
 
 ```csharp
 var input = BufferBlock(token);
