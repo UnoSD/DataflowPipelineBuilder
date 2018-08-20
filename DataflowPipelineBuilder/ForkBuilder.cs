@@ -7,11 +7,18 @@ namespace DataflowPipelineBuilder
     {
         readonly ITargetBlock<TOrigin> _start;
         readonly ISourceBlock<TTarget> _current;
+        readonly BuilderOptions _options;
 
-        public ForkBuilder(ITargetBlock<TOrigin> start, ISourceBlock<TTarget> current)
+        public ForkBuilder
+        (
+            ITargetBlock<TOrigin> start,
+            ISourceBlock<TTarget> current,
+            BuilderOptions options
+        )
         {
             _start = start;
             _current = current;
+            _options = options;
         }
 
         public IBuilder<TOrigin, Tuple<TLOutput, TROutput>>
@@ -25,7 +32,7 @@ namespace DataflowPipelineBuilder
 
             _current.LinkTo(broadcastBlock, new DataflowLinkOptions { PropagateCompletion = true });
 
-            var broadcastBuilder = new MiddleBuilder<TOrigin, TTarget>(_start, broadcastBlock);
+            var broadcastBuilder = new MiddleBuilder<TOrigin, TTarget>(_start, broadcastBlock, _options);
 
             var left = leftBranch(broadcastBuilder);
             var right = rightBranch(broadcastBuilder);
@@ -35,7 +42,7 @@ namespace DataflowPipelineBuilder
             left.End().LinkTo(join.Target1, new DataflowLinkOptions { PropagateCompletion = true });
             right.End().LinkTo(join.Target2, new DataflowLinkOptions { PropagateCompletion = true });
 
-            return new MiddleBuilder<TOrigin, Tuple<TLOutput, TROutput>>(_start, join);
+            return new MiddleBuilder<TOrigin, Tuple<TLOutput, TROutput>>(_start, join, _options);
         }
     }
 }

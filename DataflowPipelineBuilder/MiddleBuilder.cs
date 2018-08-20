@@ -6,21 +6,28 @@ namespace DataflowPipelineBuilder
     {
         readonly ITargetBlock<TOrigin> _start;
         readonly ISourceBlock<TTarget> _current;
+        readonly BuilderOptions _options;
 
-        internal MiddleBuilder(ITargetBlock<TOrigin> start, ISourceBlock<TTarget> current)
+        internal MiddleBuilder
+        (
+            ITargetBlock<TOrigin> start,
+            ISourceBlock<TTarget> current, 
+            BuilderOptions options
+        )
         {
             _start = start;
             _current = current;
+            _options = options;
         }
 
         public IBuilder<TOrigin, TNewTarget> Then<TNewTarget>(IPropagatorBlock<TTarget, TNewTarget> block)
         {
             _current.LinkTo(block, new DataflowLinkOptions { PropagateCompletion = true });
 
-            return new MiddleBuilder<TOrigin, TNewTarget>(_start, block);
+            return new MiddleBuilder<TOrigin, TNewTarget>(_start, block, _options);
         }
 
-        public IForkBuilder<TOrigin, TTarget> Fork() => new ForkBuilder<TOrigin, TTarget>(_start, _current);
+        public IForkBuilder<TOrigin, TTarget> Fork() => new ForkBuilder<TOrigin, TTarget>(_start, _current, _options);
 
         public IPropagatorBlock<TOrigin, TTarget> End() => 
             new WrapperBlock<TOrigin, TTarget>(_start, _current);
