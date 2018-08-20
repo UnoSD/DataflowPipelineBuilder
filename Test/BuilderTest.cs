@@ -40,7 +40,7 @@ namespace Test
                 new Builder();
 
             var pipelineBlock = 
-                builder.Create(new BufferBlock<string>())
+                builder.Create<string>()
                        .Select(JObject.Parse)
                        .Fork(source => source.Select(s => s.Properties().First().Name),
                              source => source.Select(s => s.Properties().First().Value.Value<int>()))
