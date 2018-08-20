@@ -4,6 +4,8 @@ Build TPL Dataflow pipelines using a fluent API and helpful extensions
 # NuGet
 https://www.nuget.org/packages/DataflowPipelineBuilder
 
+# Using LINQ-like extension syntax
+
 ```csharp
 var builder = 
     new Builder();
@@ -24,7 +26,7 @@ Assert.That(actual.Count, Is.EqualTo(4));
 Assert.That(actual.Count(b => b.Count == 3), Is.EqualTo(3));
 Assert.That(actual.Count(b => b.Count == 1), Is.EqualTo(1));
 ```
-
+# Using blocks
 
 ```csharp
 var builder = 
@@ -47,4 +49,31 @@ var actual =
 Assert.That(actual.Count, Is.EqualTo(4));
 Assert.That(actual.Count(b => b.Length == 3), Is.EqualTo(3));
 Assert.That(actual.Count(b => b.Length == 1), Is.EqualTo(1));
+```
+# Fork and join
+
+```csharp
+var builder = 
+    new Builder();
+
+var pipelineBlock = 
+    builder.Create<string>()
+           .Select(JObject.Parse)
+           .Fork(source => source.Select(s => s.Properties().First().Name),
+                 source => source.Select(s => s.Properties().First().Value.Value<int>()))
+           .End();
+
+await
+    Enumerable.Range(1, 3)
+              .Select(index => $@"{{ ""value{index}"": {index} }}")
+              .Select(pipelineBlock.SendAsync)
+              .WhenAll()
+              .Then(() => pipelineBlock.Complete());
+
+var actual = 
+    await pipelineBlock.ReceiveAllAsync();
+
+Assert.That(actual.Count, Is.EqualTo(3));
+Assert.That(actual.Select(t => t.Item1), Is.EquivalentTo(new [] { "value1", "value2", "value3" }));
+Assert.That(actual.Select(t => t.Item2), Is.EquivalentTo(new [] { 1, 2, 3 }));
 ```
