@@ -33,6 +33,11 @@ var pipelineBlock =
            .Then(new BatchBlock<JObject>(3))
            .End();
 
+await Task.WhenAll(Enumerable.Repeat("{ }", 10)
+                             .Select(pipelineBlock.SendAsync));
+
+pipelineBlock.Complete();
+
 var actual = 
     await pipelineBlock.ReceiveAllAsync();
 
