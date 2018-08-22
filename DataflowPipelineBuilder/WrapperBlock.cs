@@ -18,11 +18,14 @@ namespace DataflowPipelineBuilder
         public DataflowMessageStatus OfferMessage(DataflowMessageHeader messageHeader, TSource messageValue, ISourceBlock<TSource> source, bool consumeToAccept) =>
             _input.OfferMessage(messageHeader, messageValue, source, consumeToAccept);
 
-        public void Complete() => _input.Complete();
+        public void Complete() => 
+            _input.Complete();
 
-        public void Fault(Exception exception) => _input.Fault(exception);
+        public void Fault(Exception exception) => 
+            _input.Fault(exception);
 
-        public Task Completion => _output.Completion;
+        public Task Completion =>
+            _output.Completion;
 
         public IDisposable LinkTo(ITargetBlock<TTarget> target, DataflowLinkOptions linkOptions) =>
             _output.LinkTo(target, linkOptions);

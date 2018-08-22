@@ -22,9 +22,11 @@ namespace DataflowPipelineBuilder
 
         public IBuilder<TOrigin, TNewTarget> Then<TNewTarget>(IPropagatorBlock<TTarget, TNewTarget> block)
         {
-            _current.LinkTo(block, new DataflowLinkOptions { PropagateCompletion = true });
+            var wrappedBlock = block.WrapInLogger(_options);
 
-            return new MiddleBuilder<TOrigin, TNewTarget>(_start, block, _options);
+            _current.LinkTo(wrappedBlock, new DataflowLinkOptions { PropagateCompletion = true });
+
+            return new MiddleBuilder<TOrigin, TNewTarget>(_start, wrappedBlock, _options);
         }
 
         public IForkBuilder<TOrigin, TTarget> Fork() => new ForkBuilder<TOrigin, TTarget>(_start, _current, _options);

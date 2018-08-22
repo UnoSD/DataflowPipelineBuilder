@@ -1,5 +1,4 @@
-﻿
-using System.Threading.Tasks.Dataflow;
+﻿using System.Threading.Tasks.Dataflow;
 
 namespace DataflowPipelineBuilder
 {
@@ -20,9 +19,11 @@ namespace DataflowPipelineBuilder
 
         public IBuilder<TOrigin, TTarget> Then<TTarget>(IPropagatorBlock<TSource, TTarget> block)
         {
-            _start.LinkTo(block, new DataflowLinkOptions { PropagateCompletion = true });
+            var wrappedBlock = block.WrapInLogger(_options);
 
-            return new MiddleBuilder<TOrigin, TTarget>(_start, block, _options);
+            _start.LinkTo(wrappedBlock, new DataflowLinkOptions { PropagateCompletion = true });
+
+            return new MiddleBuilder<TOrigin, TTarget>(_start, wrappedBlock, _options);
         }
 
         public IForkBuilder<TOrigin, TSource> Fork() => 
