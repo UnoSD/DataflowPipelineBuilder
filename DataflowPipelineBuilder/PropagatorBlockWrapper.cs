@@ -4,12 +4,12 @@ using System.Threading.Tasks.Dataflow;
 
 namespace DataflowPipelineBuilder
 {
-    class WrapperBlock<TSource, TTarget> : IPropagatorBlock<TSource, TTarget>
+    class PropagatorBlockWrapper<TSource, TTarget> : IPropagatorBlock<TSource, TTarget>
     {
         readonly ISourceBlock<TTarget> _output;
         readonly ITargetBlock<TSource> _input;
 
-        public WrapperBlock(ITargetBlock<TSource> input, ISourceBlock<TTarget> output)
+        public PropagatorBlockWrapper(ITargetBlock<TSource> input, ISourceBlock<TTarget> output)
         {
             _output = output;
             _input = input;
